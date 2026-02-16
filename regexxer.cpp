@@ -1039,7 +1039,6 @@ void MainRegexxer::btReplaceClicked(void) {
             data->curpos_ = 0;
             ui_->btReplace_->setDisabled(true);
             ui_->leReplace_->setVisible(false);
-            ui_->actionSaveCurrent_->setEnabled(true);
         } else {
             data->search_ = searchPositions(data->document_.toPlainText(), regex_);
             twFilesItemClicked(item, 0);
@@ -1050,6 +1049,10 @@ void MainRegexxer::btReplaceClicked(void) {
             file_matches_.second -= 1;
         }
 
+        ui_->actionSaveCurrent_->setEnabled(true);
+        item->setText(1, QString::number(data->matches()));
+        item->setData(1, Qt::UserRole, data->matches());
+
         twItemStyleChanged(item, true);
         updateStatus(data);
     }
@@ -1058,7 +1061,8 @@ void MainRegexxer::btReplaceClicked(void) {
 void MainRegexxer::btThisFileClicked(void) {
     auto search = ui_->cbSearch_->currentText();
     auto replace = ui_->cbReplace_->currentText();
-    auto [data, path] = twItemFileData(ui_->twFiles_->currentItem());
+    auto item = ui_->twFiles_->currentItem();
+    auto [data, path] = twItemFileData(item);
 
     if(data && data->isValid() && 0 < data->matches()) {
         auto content = data->document_.toPlainText();
@@ -1066,13 +1070,17 @@ void MainRegexxer::btThisFileClicked(void) {
         data->document_.setPlainText(content);
         data->clearPositions();
 
+        ui_->actionSaveCurrent_->setEnabled(true);
+        item->setText(1, QString::number(data->matches()));
+        item->setData(1, Qt::UserRole, data->matches());
+
         file_matches_.first = 0;
         file_matches_.second -= 1;
 
+        twItemStyleChanged(item, true);
+        twFilesItemClicked(ui_->twFiles_->currentItem(), 0);
         updateStatus(data);
     }
-
-    twFilesItemClicked(ui_->twFiles_->currentItem(), 0);
 }
 
 void MainRegexxer::btAllFilesClicked(void) {
@@ -1087,15 +1095,20 @@ void MainRegexxer::btAllFilesClicked(void) {
             content.replace(regex_, replace);
             data->document_.setPlainText(content);
             data->clearPositions();
+
+            item->setText(1, QString::number(data->matches()));
+            item->setData(1, Qt::UserRole, data->matches());
+            twItemStyleChanged(item, true);
         }
     }
 
-    twFilesItemClicked(ui_->twFiles_->currentItem(), 0);
     ui_->btAllFiles_->setDisabled(true);
+    ui_->actionSaveAll_->setEnabled(true);
 
     file_matches_.first = 0;
     file_matches_.second = 0;
 
+    twFilesItemClicked(ui_->twFiles_->currentItem(), 0);
     updateStatus();
 }
 
@@ -1135,14 +1148,18 @@ void MainRegexxer::twItemFileSave(QTreeWidgetItem* item) {
 
         if(file.error()) {
             qWarning() << file.errorString() << path;
+            item->setText(1, "!");
+            item->setToolTip(1, file.errorString());
+            item->setForeground(1, QBrush(Qt::red));
         } else {
             file.commit();
+
+            data->document_.setModified(false);
+            item->setText(1, QString::number(data->matches()));
+            item->setData(1, Qt::UserRole, data->matches());
+
+            twItemStyleChanged(item, false);
         }
-
-        item->setText(1, QString::number(data->matches()));
-        item->setData(1, Qt::UserRole, data->matches());
-
-        twItemStyleChanged(item, false);
     }
 }
 

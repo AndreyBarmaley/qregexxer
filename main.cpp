@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     QApplication app(argc, argv);
 
     QCoreApplication::setApplicationName("qregexxer");
-    QCoreApplication::setApplicationVersion(QString::number(20260207));
+    QCoreApplication::setApplicationVersion(QString::number(20260210));
 
     QCommandLineParser parser;
 

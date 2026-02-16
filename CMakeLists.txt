@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(qregexxer VERSION 20260207 LANGUAGES CXX)
+project(qregexxer VERSION 20260210 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
