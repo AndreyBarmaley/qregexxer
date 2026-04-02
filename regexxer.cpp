@@ -251,8 +251,15 @@ MainRegexxer::MainRegexxer(const QCommandLineParser & parser)
     ui_->actionQuit_->setEnabled(true);
 
     // init folders
-    loadCbFolders(*ui_->cbFolders_,
-                  qvariant_cast<QStringList>(settings_.value("folders")) << parser.positionalArguments());
+    auto folder = parser.positionalArguments();
+    if(folder.empty()) {
+        loadCbFolders(*ui_->cbFolders_,
+                  qvariant_cast<QStringList>(settings_.value("folders")));
+    } else {
+        loadCbFolders(*ui_->cbFolders_,
+                 QStringList(QDir(folder.front()).absolutePath()) << qvariant_cast<QStringList>(settings_.value("folders")));
+        ui_->cbFolders_->setCurrentIndex(0);
+    }
 
     // init patterns
     loadCbPatterns(*ui_->cbPatterns_,
@@ -394,12 +401,13 @@ MainRegexxer::MainRegexxer(const QCommandLineParser & parser)
 }
 
 void MainRegexxer::loadCbFolders(QComboBox & box, QStringList dirs) const {
+
     dirs.removeDuplicates();
 
     for(auto & path : dirs) {
         if(QFileInfo(path).isDir()) {
             const QDir dir(path);
-            box.addItem(QIcon::fromTheme("inode-directory"), dir.dirName(),
+            box.addItem(QIcon::fromTheme("inode-directory"), path,
                         QVariant::fromValue(StringData(dir.absolutePath(), true)));
         }
     }
