@@ -27,7 +27,6 @@
 #include <QFile>
 #include <QPair>
 #include <QFont>
-#include <QFile>
 #include <QMenu>
 #include <QIcon>
 #include <QBrush>
@@ -83,9 +82,7 @@ namespace {
     };
 
     struct StringData : QPair<QString, bool> {
-        StringData(const QString & str, bool save) : QPair<QString, bool> {
-            str, save
-        } {}
+        StringData(const QString & str, bool save) : QPair<QString, bool>(str, save) {}
         StringData() {}
 
         QString string(void) const {
@@ -98,9 +95,7 @@ namespace {
     };
 
     struct ListData : QPair<QStringList, bool> {
-        ListData(const QStringList & list, bool save) : QPair<QStringList, bool> {
-            list, save
-        } {}
+        ListData(const QStringList & list, bool save) : QPair<QStringList, bool>(list, save) {}
         ListData(QStringList && list, bool save) : QPair<QStringList, bool> {
             std::forward<QStringList>(list), save
         } {}
@@ -562,6 +557,8 @@ void MainRegexxer::closeEvent(QCloseEvent* ev) {
 void MainRegexxer::keyPressEvent(QKeyEvent* ev) {
     if(ev->key() == Qt::Key_Escape) {
         close();
+    } else {
+        QMainWindow::keyPressEvent(ev);
     }
 }
 

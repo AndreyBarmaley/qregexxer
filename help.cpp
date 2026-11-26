@@ -40,11 +40,14 @@ DialogHelp::DialogHelp(QWidget* parent) :
 void DialogHelp::closeEvent(QCloseEvent* ev) {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, "qregexxer", "settings");
     settings.setValue("help_geometry", geometry());
+    QDialog::closeEvent(ev);
 }
 
 void DialogHelp::keyPressEvent(QKeyEvent* ev) {
     if(ev->key() == Qt::Key_Escape ||
        ev->key() == Qt::Key_Return || ev->key() == Qt::Key_Space) {
         close();
+    } else {
+        QDialog::keyPressEvent(ev);
     }
 }
